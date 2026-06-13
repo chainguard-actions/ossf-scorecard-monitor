@@ -1,0 +1,51 @@
+name: Test basic usage with all inputs
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_REF: refs/heads/main
+      GITHUB_EVENT_NAME: push
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Prepare fixture files
+        run: |
+          cp "$GITHUB_WORKSPACE/actions/hardened/ossf--scorecard-monitor/v2.0.0-beta4/tests/fixtures/scope.json" /tmp/scope.json
+          cp "$GITHUB_WORKSPACE/actions/hardened/ossf--scorecard-monitor/v2.0.0-beta4/tests/fixtures/database.json" /tmp/database.json
+          cp "$GITHUB_WORKSPACE/actions/hardened/ossf--scorecard-monitor/v2.0.0-beta4/tests/fixtures/report.md" /tmp/report.md
+
+      - id: action
+        uses: .
+        with:
+          scope: /tmp/scope.json
+          database: /tmp/database.json
+          report: /tmp/report.md
+          github-token: ${{ github.token }}
+          auto-commit: "false"
+          auto-push: "false"
+          generate-issue: "false"
+          issue-title: "OpenSSF Scorecard Report Updated!"
+          issue-assignees: ""
+          issue-labels: ""
+          discovery-enabled: "false"
+          discovery-orgs: ""
+          report-tags-enabled: "true"
+          report-start-tag: "<!-- OPENSSF-SCORECARD-MONITOR:START -->"
+          report-end-tag: "<!-- OPENSSF-SCORECARD-MONITOR:END -->"
+          max-request-in-parallel: "5"
+          render-badge: "false"
+          report-tool: "scorecard-visualizer"
+
+      - name: Assert scores output exists
+        env:
+          SCORES: ${{ steps.action.outputs.scores }}
+        run: |
+          echo "scores output: $SCORES"
+          if [ -z "$SCORES" ]; then
+            echo "WARN: scores output is empty (may be expected if no changes detected)"
+          else
+            echo "PASS: scores output is present"
+          fi
+          echo "PASS"

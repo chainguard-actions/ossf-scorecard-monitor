@@ -1,0 +1,4 @@
+# OpenSSF Scorecard Report
+
+<!-- OPENSSF-SCORECARD-MONITOR:START -->
+<!-- OPENSSF-SCORECARD-MONITOR:END -->
