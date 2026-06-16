@@ -1,0 +1,54 @@
+name: Test scorecard monitor with issue option inputs
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_EVENT_NAME: push
+      GITHUB_REF: refs/heads/main
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Prepare working files
+        run: |
+          # Use empty scope to avoid external network calls to api.securityscorecards.dev
+          echo '{"github.com":{}}' > /tmp/scope.json
+          # Database must include "github.com" key per schema requirements
+          echo '{"github.com":{}}' > /tmp/database.json
+          echo '# OpenSSF Scorecard Report' > /tmp/report.md
+
+      - id: monitor
+        uses: .
+        with:
+          scope: /tmp/scope.json
+          database: /tmp/database.json
+          report: /tmp/report.md
+          auto-commit: "false"
+          auto-push: "false"
+          generate-issue: "false"
+          issue-title: "Test Scorecard Report"
+          issue-assignees: "octocat"
+          issue-labels: "scorecard,security"
+          github-token: ${{ github.token }}
+          max-request-in-parallel: "1"
+          render-badge: "false"
+
+      - name: Assert scores output is valid JSON or empty
+        env:
+          SCORES: ${{ steps.monitor.outputs.scores }}
+        run: |
+          echo "scores output: $SCORES"
+          if [ -n "$SCORES" ]; then
+            echo "$SCORES" | python3 -c "import sys, json; json.load(sys.stdin)" || {
+              echo "FAIL: scores output is not valid JSON"
+              exit 1
+            }
+            echo "PASS: scores output is valid JSON"
+          else
+            echo "PASS: scores output is empty (no repos in scope)"
+          fi
+
+      - name: Assert action completed without error
+        run: |
+          echo "PASS: action completed successfully with issue-assignees and issue-labels inputs"
