@@ -1,4 +1,4 @@
-name: Test scorecard monitor with issue option inputs
+name: Test issue-assignees and issue-labels inputs
 on:
   workflow_dispatch:
 jobs:
@@ -14,7 +14,6 @@ jobs:
         run: |
           # Use empty scope to avoid external network calls to api.securityscorecards.dev
           echo '{"github.com":{}}' > /tmp/scope.json
-          # Database must include "github.com" key per schema requirements
           echo '{"github.com":{}}' > /tmp/database.json
           echo '# OpenSSF Scorecard Report' > /tmp/report.md
 
@@ -28,7 +27,7 @@ jobs:
           auto-push: "false"
           generate-issue: "false"
           issue-title: "Test Scorecard Report"
-          issue-assignees: "octocat"
+          issue-assignees: "test-user"
           issue-labels: "scorecard,security"
           github-token: ${{ github.token }}
           max-request-in-parallel: "1"

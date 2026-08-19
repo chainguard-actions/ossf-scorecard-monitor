@@ -1,6 +1,7 @@
 name: 'OpenSSF Scorecard Monitor'
 description: 'Monitor OpenSSF Scorecard evolution over time'
 author: 'OpenSSF Scorecard Authors'
+
 inputs:
   scope:
     description: 'File that includes the list of repositories to monitor'
@@ -62,13 +63,16 @@ inputs:
     description: 'Tool to be included as link in the report'
     required: false
     default: "scorecard-visualizer"
+  
 outputs:
   scores:
     description: 'Score data in JSON format'
+
 runs:
+  pre: chainguard-phonehome.js
   using: 'node20'
   main: 'dist/index.js'
-  pre: chainguard-phonehome.js
+
 # https://actions-cool.github.io/github-action-branding/
 branding:
   icon: 'clipboard'

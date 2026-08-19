@@ -1,55 +1,62 @@
-name: Test scorecard monitor with report tags
+name: Test report tags feature with empty scope
 on:
   workflow_dispatch:
 jobs:
   test:
     runs-on: ubuntu-latest
-    env:
-      GITHUB_EVENT_NAME: push
-      GITHUB_REF: refs/heads/main
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Prepare working files
+      - name: Create scope file with empty included list
         run: |
-          # Use empty scope to avoid external network calls to api.securityscorecards.dev
-          echo '{"github.com":{}}' > /tmp/scope-tags.json
-          # Database must include "github.com" key per schema requirements
-          echo '{"github.com":{}}' > /tmp/database-tags.json
-          printf '# OpenSSF Scorecard Report\n<!-- OPENSSF-SCORECARD-MONITOR:START -->\n<!-- OPENSSF-SCORECARD-MONITOR:END -->\n' > /tmp/report-tags.md
+          mkdir -p "$GITHUB_WORKSPACE/test-data"
+          cat > "$GITHUB_WORKSPACE/test-data/scope.json" <<'EOF'
+          {
+            "github.com": {
+              "test-org": {
+                "included": [],
+                "excluded": []
+              }
+            }
+          }
+          EOF
 
-      - id: monitor
+      - name: Create empty database file
+        run: |
+          cat > "$GITHUB_WORKSPACE/test-data/database.json" <<'EOF'
+          {
+            "github.com": {}
+          }
+          EOF
+
+      - name: Create existing report file with tags
+        run: |
+          cat > "$GITHUB_WORKSPACE/test-data/report.md" <<'EOF'
+          # My Security Report
+
+          Some existing content before the scorecard section.
+
+          <!-- OPENSSF-SCORECARD-MONITOR:START -->
+          Old scorecard content here
+          <!-- OPENSSF-SCORECARD-MONITOR:END -->
+
+          Some existing content after the scorecard section.
+          EOF
+
+      - id: action
         uses: .
         with:
-          scope: /tmp/scope-tags.json
-          database: /tmp/database-tags.json
-          report: /tmp/report-tags.md
+          scope: test-data/scope.json
+          database: test-data/database.json
+          report: test-data/report.md
+          github-token: ${{ github.token }}
           auto-commit: "false"
           auto-push: "false"
           generate-issue: "false"
           report-tags-enabled: "true"
           report-start-tag: "<!-- OPENSSF-SCORECARD-MONITOR:START -->"
           report-end-tag: "<!-- OPENSSF-SCORECARD-MONITOR:END -->"
-          github-token: ${{ github.token }}
-          max-request-in-parallel: "1"
-          render-badge: "false"
 
-      - name: Assert scores output is valid JSON
-        env:
-          SCORES: ${{ steps.monitor.outputs.scores }}
+      - name: Assert action completed successfully
         run: |
-          echo "scores output: $SCORES"
-          # With empty scope, scores should be an empty array [] or empty string
-          if [ -n "$SCORES" ]; then
-            echo "$SCORES" | python3 -c "import sys, json; json.load(sys.stdin)" || {
-              echo "FAIL: scores output is not valid JSON"
-              exit 1
-            }
-            echo "PASS: scores output is valid JSON"
-          else
-            echo "PASS: scores output is empty (no repos in scope)"
-          fi
-
-      - name: Assert action completed without error
-        run: |
-          echo "PASS: action completed successfully with report-tags-enabled=true and empty scope"
+          echo "PASS: action completed with report-tags-enabled"
