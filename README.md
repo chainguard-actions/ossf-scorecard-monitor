@@ -8,7 +8,7 @@ Hardened by [Chainguard](https://www.chainguard.dev) from the upstream action at
 
 | Version | Tag | Upstream commit | Hardening report |
 |---------|-----|-----------------|------------------|
-| v2.0.0-beta4 | [`v2.0.0-beta4`](https://github.com/chainguard-actions/ossf-scorecard-monitor/tree/v2.0.0-beta4) | [`1e297bb`](https://github.com/ossf/scorecard-monitor/commit/1e297bbead0a526b3b70133c62b4a188a4f1776b) | [`HARDENING.md`](https://github.com/chainguard-actions/ossf-scorecard-monitor/blob/v2.0.0-beta4/HARDENING.md) |
+| v2.0.0-beta4 | [`v2.0.0-beta4`](https://github.com/chainguard-actions/ossf-scorecard-monitor/tree/v2.0.0-beta4) | [`1e297bb`](https://github.com/ossf/scorecard-monitor/commit/1e297bbead0a526b3b70133c62b4a188a4f1776b) | — |
 | v2.0.0-beta8 | [`v2.0.0-beta8`](https://github.com/chainguard-actions/ossf-scorecard-monitor/tree/v2.0.0-beta8) | [`a3a9c4c`](https://github.com/ossf/scorecard-monitor/commit/a3a9c4cfa0684480ec5f86fa178fc22c4394b69e) | [`HARDENING.md`](https://github.com/chainguard-actions/ossf-scorecard-monitor/blob/v2.0.0-beta8/HARDENING.md) |
 
 ## Privacy
