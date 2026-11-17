@@ -4,8 +4,13 @@
   "version": "v2.0.0-beta8",
   "commit_sha": "a3a9c4cfa0684480ec5f86fa178fc22c4394b69e",
   "url": "https://github.com/ossf/scorecard-monitor",
-  "policy_sha": "d636be7e43ef829af6e853da6b3c7566db9f72fe",
+  "policy_sha": "374911c4be584df24e6da57af2d990570ef0f859",
   "test_policy_sha": "843adf9e4b8f85d0c08b27b9d0b09dd094b54702",
   "test_agent_version": "2",
-  "harden_agent_version": "2"
+  "harden_agent_version": "2",
+  "dist_artifact": {
+    "gcs_uri": "gs://patch-actions-node-artifacts/dist-artifacts/ossf/scorecard-monitor/v2.0.0-beta8/sha256-31dd8f253f887eec29bb671b253bad34529c3496d635e1592f50075f828eae0a.tar.gz",
+    "sha256": "31dd8f253f887eec29bb671b253bad34529c3496d635e1592f50075f828eae0a",
+    "size_bytes": 411294
+  }
 }
